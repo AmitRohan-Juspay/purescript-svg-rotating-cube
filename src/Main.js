@@ -1,8 +1,5 @@
-// exports.plotCordinates = function(co_ords) {
-//     return function() {
-//       console.log(co_ords)
-//     }
-// }
+//Degree
+var VELLOCITY = 5;
 
 exports.updateCanvas = function(id) {
   return function(param) {
@@ -22,8 +19,34 @@ exports.updateCanvas = function(id) {
   }
 }
 
+var setUpCanvas = function (){
 
-//Ref W.R.T origin ( need fix for angle)
+    if (!window.global) {
+      window.global = {};
+    }
+    if (!window.global.draw) {
+      window.global.draw= SVG('svgContainer').size(500, 500);    
+    }
+
+    if (!window.global.cube) {
+      window.global.cube = {}  
+      window.global.cube = {
+        cX : 100,
+        cY : 100,
+        cZ : 0,
+        angX : 0,
+        angY : 0,
+        angZ : 0,
+        size : 50  
+      }        
+    }
+
+    if (!window.global.cubeSVG) {
+      window.global.cubeSVG=createCubeUI()
+    }
+}
+
+
 var projectOn2D = function (x, y, z , myCube){
 
     x-=myCube.cX;
@@ -65,6 +88,25 @@ var updateCubeUI = function (){
     window.global.cubeSVG.plot(cords);
 }  
 
+var modifyCubeParameter = function (paramToModify){
+    var incValue = VELLOCITY * 0.0174533;
+    if(paramToModify === 'buttonYMinus'){
+        window.global.cube.angY -= incValue; 
+      }
+      else if(paramToModify === 'buttonYPlus'){
+        window.global.cube.angY += incValue; 
+      }
+      else if(paramToModify === 'buttonXMinus'){
+        window.global.cube.angX += incValue; 
+      }else if(paramToModify === 'buttonXPlus'){
+        window.global.cube.angX -= incValue; 
+      }else if(paramToModify === 'buttonZMinus'){
+        window.global.cube.angZ += incValue; 
+      }else if(paramToModify === 'buttonZPlus'){
+        window.global.cube.angZ -= incValue; 
+      }
+}  
+
 var createCubeUI = function (){
       var myCube = window.global.cube || {cX : 60, cY : 60, cZ : 60, angX : 0, angY : 0, angZ : 0, size : 50 }  
       var cords= getCubeCorners(myCube) 
@@ -88,70 +130,59 @@ exports.attachButtonEvents = function(id) {
       window.MAP = {};
     }
 
-    if (!window.global) {
-      window.global = {};
-    }
-
-    if (!window.global.draw) {
-      window.global.draw= SVG('svgContainer').size(500, 500);    
-    }
-
-    if (!window.global.cube) {
-      window.global.cube = {}  
-      window.global.cube = {
-        cX : 100,
-        cY : 100,
-        cZ : 0,
-        angX : 0,
-        angY : 0,
-        angZ : 0,
-        size : 50  
-      }        
-    }
-
-    if (!window.global.cubeSVG) {
-      window.global.cubeSVG=createCubeUI()
-    }
-
-
     if (typeof window.MAP[id] == "undefined") {
         window.MAP[id]={}
         
     } 
-    var incValue = 5 * 0.0174533;
+
+    setUpCanvas()
+
+    
     var cb = function(e) {
-      if(id === 'buttonYMinus'){
-        window.global.cube.angY -= incValue; 
-        updateCubeUI()
-      }
-      else if(id === 'buttonYPlus'){
-        window.global.cube.angY += incValue; 
-        updateCubeUI()
-      }
-      else if(id === 'buttonXMinus'){
-        window.global.cube.angX += incValue; 
-        updateCubeUI()
-        
-      }else if(id === 'buttonXPlus'){
-        window.global.cube.angX -= incValue; 
-        updateCubeUI()
-        
-      }else if(id === 'buttonZMinus'){
-        window.global.cube.angZ += incValue; 
-        updateCubeUI()
-        
-      }else if(id === 'buttonZPlus'){
-        window.global.cube.angZ -= incValue; 
-        updateCubeUI()
-        
-      }
-
-
-
+      modifyCubeParameter(id);
+      updateCubeUI();
       sub(window.MAP[id])();
     };
 
     window.SUB = sub;
     elem.addEventListener("click", cb);
   }
+}
+
+exports.attachKeyBoardEvents = function(sub) {
+
+    setUpCanvas()
+
+     if (!window.MAP) {
+      window.MAP = {};
+    }
+    var id = "document"
+
+    if (typeof window.MAP[id] == "undefined") {
+        window.MAP[id]={}
+        
+    } 
+
+    var cb = function(e) {
+
+      var key = e.keyCode ? e.keyCode : e.which;
+
+      if(key==37 || key==38 || key==39 || key==40){
+        var param
+        switch (key) {
+          case 38 : param = "buttonXPlus"; break;
+          case 40 : param = "buttonXMinus"; break; 
+          case 39 : param = "buttonYPlus"; break; 
+          case 37 : param = "buttonYMinus"; break;
+        }
+        modifyCubeParameter(param);
+        updateCubeUI();
+      }
+      
+      sub(window.MAP[id])();
+    };
+
+    window.SUB = sub;
+
+    document.onkeydown = cb;
 }

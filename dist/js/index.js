@@ -708,11 +708,8 @@ var PS = {};
   exports["functorABehavior"] = functorABehavior;
   exports["applyABehavior"] = applyABehavior;
 })(PS["FRP.Behavior"] = PS["FRP.Behavior"] || {});
-(function(exports) {// exports.plotCordinates = function(co_ords) {
-  //     return function() {
-  //       console.log(co_ords)
-  //     }
-  // }
+(function(exports) {//Degree
+  var VELLOCITY = 5;
 
   exports.updateCanvas = function(id) {
     return function(param) {
@@ -732,27 +729,62 @@ var PS = {};
     }
   }
 
-  var projectOn2D = function (x, y, z , qx, qy, qz ){
-      var xRotQz = x * Math.cos(qz) + y * Math.sin(qz),
-        yRotQz = y * Math.cos(qz) - x * Math.sin(qz),
-        yRotQzQx = yRotQz * Math.cos(qx) + z * Math.sin(qx),
-        zRotQzQx = z * Math.cos(qx) - yRotQz * Math.sin(qx),
-        xRotQzQxQy = xRotQz * Math.cos(qy) + zRotQzQx * Math.sin(qy)
+  var setUpCanvas = function (){
 
-      return [ xRotQzQxQy, yRotQzQx ]
+      if (!window.global) {
+        window.global = {};
+      }
+      if (!window.global.draw) {
+        window.global.draw= SVG('svgContainer').size(500, 500);    
+      }
+
+      if (!window.global.cube) {
+        window.global.cube = {}  
+        window.global.cube = {
+          cX : 100,
+          cY : 100,
+          cZ : 0,
+          angX : 0,
+          angY : 0,
+          angZ : 0,
+          size : 50  
+        }        
+      }
+
+      if (!window.global.cubeSVG) {
+        window.global.cubeSVG=createCubeUI()
+      }
+  }
+
+
+  var projectOn2D = function (x, y, z , myCube){
+
+      x-=myCube.cX;
+      y-=myCube.cY;
+      z-=myCube.cZ;
+
+
+      //Rotate 
+      var xRotQz = x * Math.cos(myCube.angZ) + y * Math.sin(myCube.angZ),
+        yRotQz = y * Math.cos(myCube.angZ) - x * Math.sin(myCube.angZ),
+        yRotQzQx = yRotQz * Math.cos(myCube.angX) + z * Math.sin(myCube.angX),
+        zRotQzQx = z * Math.cos(myCube.angX) - yRotQz * Math.sin(myCube.angX),
+        xRotQzQxQy = xRotQz * Math.cos(myCube.angY) + zRotQzQx * Math.sin(myCube.angY)
+
+      return [ xRotQzQxQy + myCube.cX, yRotQzQx + myCube.cX]
   }
 
   // Convert 3D Cube to 2D cprojecton ( using diagonal as reference to plot the cube)
   var getCubeCorners = function (myCube){
       var half = myCube.size / 2.0
-      point1 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-      point2 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-      point3 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-      point4 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-      point5 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-      point6 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-      point7 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-      point8 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ )
+      point1 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ - half, myCube),
+      point2 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ - half, myCube),
+      point3 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ + half, myCube),
+      point4 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ + half, myCube),
+      point5 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ - half, myCube),
+      point6 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ - half, myCube),
+      point7 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ + half, myCube),
+      point8 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ + half, myCube)
       return [point1, point2, point4, point3, point1, point5, point6, point2, point4, point8, point7, point3, point7, point5, point6, point8]
   }    
 
@@ -764,6 +796,25 @@ var PS = {};
 
       window.global.cubeSVG.clear()
       window.global.cubeSVG.plot(cords);
+  }  
+
+  var modifyCubeParameter = function (paramToModify){
+      var incValue = VELLOCITY * 0.0174533;
+      if(paramToModify === 'buttonYMinus'){
+          window.global.cube.angY -= incValue; 
+        }
+        else if(paramToModify === 'buttonYPlus'){
+          window.global.cube.angY += incValue; 
+        }
+        else if(paramToModify === 'buttonXMinus'){
+          window.global.cube.angX += incValue; 
+        }else if(paramToModify === 'buttonXPlus'){
+          window.global.cube.angX -= incValue; 
+        }else if(paramToModify === 'buttonZMinus'){
+          window.global.cube.angZ += incValue; 
+        }else if(paramToModify === 'buttonZPlus'){
+          window.global.cube.angZ -= incValue; 
+        }
   }  
 
   var createCubeUI = function (){
@@ -789,72 +840,61 @@ var PS = {};
         window.MAP = {};
       }
 
-      if (!window.global) {
-        window.global = {};
-      }
-
-      if (!window.global.draw) {
-        window.global.draw= SVG('svgContainer').size(500, 500);    
-      }
-
-      if (!window.global.cube) {
-        window.global.cube = {}  
-        window.global.cube = {
-          cX : 100,
-          cY : 100,
-          cZ : 0,
-          angX : 0,
-          angY : 0,
-          angZ : 0,
-          size : 50  
-        }        
-      }
-
-      if (!window.global.cubeSVG) {
-        window.global.cubeSVG=createCubeUI()
-      }
-
-
       if (typeof window.MAP[id] == "undefined") {
           window.MAP[id]={}
         
       } 
-      var incValue = 5 * 0.0174533;
+
+      setUpCanvas()
+
+    
       var cb = function(e) {
-        if(id === 'buttonYMinus'){
-          window.global.cube.angY -= incValue; 
-          updateCubeUI()
-        }
-        else if(id === 'buttonYPlus'){
-          window.global.cube.angY += incValue; 
-          updateCubeUI()
-        }
-        else if(id === 'buttonXMinus'){
-          window.global.cube.angX += incValue; 
-          updateCubeUI()
-        
-        }else if(id === 'buttonXPlus'){
-          window.global.cube.angX -= incValue; 
-          updateCubeUI()
-        
-        }else if(id === 'buttonZMinus'){
-          window.global.cube.angZ += incValue; 
-          updateCubeUI()
-        
-        }else if(id === 'buttonZPlus'){
-          window.global.cube.angZ -= incValue; 
-          updateCubeUI()
-        
-        }
-
-
-
+        modifyCubeParameter(id);
+        updateCubeUI();
         sub(window.MAP[id])();
       };
 
       window.SUB = sub;
       elem.addEventListener("click", cb);
     }
+  }
+
+  exports.attachKeyBoardEvents = function(sub) {
+
+      setUpCanvas()
+
+       if (!window.MAP) {
+        window.MAP = {};
+      }
+      var id = "document"
+
+      if (typeof window.MAP[id] == "undefined") {
+          window.MAP[id]={}
+        
+      } 
+
+      var cb = function(e) {
+
+        var key = e.keyCode ? e.keyCode : e.which;
+
+        if(key==37 || key==38 || key==39 || key==40){
+          var param
+          switch (key) {
+            case 38 : param = "buttonXPlus"; break;
+            case 40 : param = "buttonXMinus"; break; 
+            case 39 : param = "buttonYPlus"; break; 
+            case 37 : param = "buttonYMinus"; break;
+          }
+          modifyCubeParameter(param);
+          updateCubeUI();
+        }
+      
+        sub(window.MAP[id])();
+      };
+
+      window.SUB = sub;
+
+      document.onkeydown = cb;
   }
 })(PS["Main"] = PS["Main"] || {});
 (function(exports) {
@@ -901,6 +941,15 @@ var PS = {};
           };
       };
   };
+  var getKeyboardController = function __do() {
+      var v = FRP_Event.create();
+      var behavior = FRP_Behavior.step(FRP_Event.eventIsEvent)(true)(v.event);
+      var x = $foreign.attachKeyBoardEvents(v.push);
+      return {
+          behavior: behavior,
+          event: v.event
+      };
+  };
   var getButtons = function (id) {
       return function __do() {
           var v = FRP_Event.create();
@@ -919,6 +968,7 @@ var PS = {};
       var v3 = getButtons("buttonYMinus")();
       var v4 = getButtons("buttonZPlus")();
       var v5 = getButtons("buttonZMinus")();
+      var v6 = getKeyboardController();
       var behavior = Control_Apply.apply(FRP_Behavior.applyABehavior(FRP_Event.functorEvent))(Control_Apply.apply(FRP_Behavior.applyABehavior(FRP_Event.functorEvent))(Control_Apply.apply(FRP_Behavior.applyABehavior(FRP_Event.functorEvent))(Control_Apply.apply(FRP_Behavior.applyABehavior(FRP_Event.functorEvent))(Control_Apply.apply(FRP_Behavior.applyABehavior(FRP_Event.functorEvent))(Data_Functor.map(FRP_Behavior.functorABehavior(FRP_Event.functorEvent))(runSystem)(v.behavior))(v1.behavior))(v2.behavior))(v3.behavior))(v4.behavior))(v5.behavior);
       return FRP_Event.subscribe(FRP_Behavior.sample_(FRP_Event.eventIsEvent)(behavior)(Control_Alt.alt(FRP_Event.altEvent)(Control_Alt.alt(FRP_Event.altEvent)(Control_Alt.alt(FRP_Event.altEvent)(Control_Alt.alt(FRP_Event.altEvent)(Control_Alt.alt(FRP_Event.altEvent)(v.event)(v1.event))(v2.event))(v3.event))(v4.event))(v5.event)))(function (x) {
           if (x) {
@@ -934,9 +984,11 @@ var PS = {};
   exports["updateAll"] = updateAll;
   exports["stopAll"] = stopAll;
   exports["getButtons"] = getButtons;
+  exports["getKeyboardController"] = getKeyboardController;
   exports["runSystem"] = runSystem;
   exports["main"] = main;
   exports["updateCanvas"] = $foreign.updateCanvas;
   exports["attachButtonEvents"] = $foreign.attachButtonEvents;
+  exports["attachKeyBoardEvents"] = $foreign.attachKeyBoardEvents;
 })(PS["Main"] = PS["Main"] || {});
 PS["Main"].main();

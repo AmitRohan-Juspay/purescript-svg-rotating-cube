@@ -2,8 +2,7 @@
   "private": true,
   "scripts": {
     "pulp": "pulp build --to dist/js/index.js",
-    "server": "concurrently \"http-server -a localhost -p 1234\" \"sleepms 1000 && open http://localhost:1234/dist/index.html\"",
-    "start": "concurrently \"npm run pulp\" \"npm run server\""
+    "server": "concurrently \"http-server -a localhost -p 1234\" \"sleepms 1000 && open http://localhost:1234/dist/index.html\""
   },
   "devDependencies": {
     "pulp": "^11.0.0",

@@ -14,6 +14,7 @@ newtype Value1 = Value1 Int
 
 foreign import updateCanvas :: ∀ eff.  Id -> Param -> Value1 -> Eff eff Unit
 foreign import attachButtonEvents :: forall a b eff.  Id ->  (b ->  Eff (frp::FRP | eff) Unit) -> Unit
+foreign import attachKeyBoardEvents :: forall a b eff. (b ->  Eff (frp::FRP | eff) Unit) -> Unit
 
 updateAll :: forall a. Eff a Unit
 updateAll = do
@@ -30,6 +31,12 @@ getButtons id = do
   let behavior = step true o.event
   let x = attachButtonEvents id o.push
   pure $ {behavior : behavior , event : o.event}
+                                   
+getKeyboardController = do
+  o <- create
+  let behavior = step true o.event
+  let x = attachKeyBoardEvents o.push
+  pure $ {behavior : behavior , event : o.event}
 
 
 
@@ -45,6 +52,7 @@ main = do
   buttonYMius <- getButtons (Id "buttonYMinus")
   buttonZPlus <- getButtons (Id "buttonZPlus")
   buttonZMius <- getButtons (Id "buttonZMinus")
+  keyboardController <- getKeyboardController
 
 
   let behavior = runSystem <$> buttonXPlus.behavior <*> buttonXMius.behavior <*> buttonYPlus.behavior <*> buttonYMius.behavior <*> buttonZPlus.behavior <*> buttonZMius.behavior 
