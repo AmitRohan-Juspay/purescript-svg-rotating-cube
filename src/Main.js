@@ -172,8 +172,8 @@ exports.attachKeyBoardEvents = function(sub) {
         switch (key) {
           case 38 : param = "buttonXPlus"; break;
           case 40 : param = "buttonXMinus"; break; 
-          case 39 : param = "buttonYPlus"; break; 
-          case 37 : param = "buttonYMinus"; break;
+          case 39 : param = "buttonYMinus"; break; 
+          case 37 : param = "buttonYPlus"; break;
         }
         modifyCubeParameter(param);
         updateCubeUI();
