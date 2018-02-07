@@ -24,27 +24,34 @@ exports.updateCanvas = function(id) {
 
 
 //Ref W.R.T origin ( need fix for angle)
-var projectOn2D = function (x, y, z , qx, qy, qz ){
-    var xRotQz = x * Math.cos(qz) + y * Math.sin(qz),
-      yRotQz = y * Math.cos(qz) - x * Math.sin(qz),
-      yRotQzQx = yRotQz * Math.cos(qx) + z * Math.sin(qx),
-      zRotQzQx = z * Math.cos(qx) - yRotQz * Math.sin(qx),
-      xRotQzQxQy = xRotQz * Math.cos(qy) + zRotQzQx * Math.sin(qy)
+var projectOn2D = function (x, y, z , myCube){
 
-    return [ xRotQzQxQy, yRotQzQx ]
+    x-=myCube.cX;
+    y-=myCube.cY;
+    z-=myCube.cZ;
+
+
+    //Rotate 
+    var xRotQz = x * Math.cos(myCube.angZ) + y * Math.sin(myCube.angZ),
+      yRotQz = y * Math.cos(myCube.angZ) - x * Math.sin(myCube.angZ),
+      yRotQzQx = yRotQz * Math.cos(myCube.angX) + z * Math.sin(myCube.angX),
+      zRotQzQx = z * Math.cos(myCube.angX) - yRotQz * Math.sin(myCube.angX),
+      xRotQzQxQy = xRotQz * Math.cos(myCube.angY) + zRotQzQx * Math.sin(myCube.angY)
+
+    return [ xRotQzQxQy + myCube.cX, yRotQzQx + myCube.cX]
 }
 
 // Convert 3D Cube to 2D cprojecton ( using diagonal as reference to plot the cube)
 var getCubeCorners = function (myCube){
     var half = myCube.size / 2.0
-    point1 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-    point2 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-    point3 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-    point4 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-    point5 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-    point6 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ - half , myCube.angX, myCube.angY, myCube.angZ ),
-    point7 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ ),
-    point8 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ + half , myCube.angX, myCube.angY, myCube.angZ )
+    point1 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ - half, myCube),
+    point2 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ - half, myCube),
+    point3 = projectOn2D (myCube.cX + half, myCube.cY - half, myCube.cZ + half, myCube),
+    point4 = projectOn2D (myCube.cX + half, myCube.cY + half, myCube.cZ + half, myCube),
+    point5 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ - half, myCube),
+    point6 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ - half, myCube),
+    point7 = projectOn2D (myCube.cX - half, myCube.cY - half, myCube.cZ + half, myCube),
+    point8 = projectOn2D (myCube.cX - half, myCube.cY + half, myCube.cZ + half, myCube)
     return [point1, point2, point4, point3, point1, point5, point6, point2, point4, point8, point7, point3, point7, point5, point6, point8]
 }    
 
