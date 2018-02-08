@@ -25,7 +25,7 @@ var setUpCanvas = function (){
       window.global = {};
     }
     if (!window.global.draw) {
-      window.global.draw= SVG('svgContainer').size(500, 500);    
+      window.global.draw= SVG('svgContainer').size(250, 250);    
     }
 
     if (!window.global.cube) {
@@ -34,9 +34,9 @@ var setUpCanvas = function (){
         cX : 100,
         cY : 100,
         cZ : 0,
-        angX : 0,
+        angX : 45,
         angY : 0,
-        angZ : 0,
+        angZ : 45,
         size : 50  
       }        
     }
@@ -97,13 +97,13 @@ var modifyCubeParameter = function (paramToModify){
         window.global.cube.angY += incValue; 
       }
       else if(paramToModify === 'buttonXMinus'){
-        window.global.cube.angX += incValue; 
-      }else if(paramToModify === 'buttonXPlus'){
         window.global.cube.angX -= incValue; 
+      }else if(paramToModify === 'buttonXPlus'){
+        window.global.cube.angX += incValue; 
       }else if(paramToModify === 'buttonZMinus'){
-        window.global.cube.angZ += incValue; 
-      }else if(paramToModify === 'buttonZPlus'){
         window.global.cube.angZ -= incValue; 
+      }else if(paramToModify === 'buttonZPlus'){
+        window.global.cube.angZ += incValue; 
       }
 }  
 
@@ -114,9 +114,9 @@ var createCubeUI = function (){
 
       window.global.cubeSVG = window.global.draw.polyline(cords)
         .fill('none')
-        .stroke({ color: '#f06', width: 4, linecap: 'round', linejoin: 'round' })
-
-      window.global.cubeSVG.marker('mid', 4, 4, function(add) {
+        .stroke({ color: '#f06', width: 2, linecap: 'round', linejoin: 'round' })
+        
+      window.global.cubeSVG.marker('mid', 4, 4, function(add) { 
         add.circle(4).fill('#ccc')
       })  
       return window.global.cubeSVG  

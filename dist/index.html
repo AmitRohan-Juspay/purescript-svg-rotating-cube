@@ -5,74 +5,86 @@
       <script type="text/javascript" src="js/svg.js"></script>
       <style>
        
-       .svgHolder {
-           width: 500px;
-           height: 300px;
-           background-color: "#f06";
-       }
-       .svgContainer {
-           width: 500px;
-           height: 300px;
-           background-color: "#ccc";
-       }
+      .svgHolder {
+        width: 260px;
+        height: 260px;
+        background-color:#ccc;
+        position:relative;
+      }
 
-       .controlPane {
-           width: 100%;
-       }
+      .svgContainer {
+        margin: 5px;
+        width: 250px;
+        height: 250px;
+        margin: 5px;
+        background-color:#FFFFFF;
+        position:absolute;
+        bottom:0px;
+        right:0px;
+      }
 
-       .cell {
-           text-align:center;
-           font-family: Arial;
-           font-size: 20px;
-       }
+      .xyzAxis {
+        margin: 5px;
+        position:absolute;
+        bottom:0px;
+        right:0px;
+        margin: 10px;
+      }
 
-       /*.buttonXPlus {
-          color: "#ff0066";
-          background-color: "#ff0066";
-          background: "#ff0066";
-          padding-top : 200px;
-          padding-left : 400px;
-       }*/
+      .controlPane {
+         width: 100%;
+      }
+
+      .button {
+         width: auto;
+         text-align:center;
+         font-family: Arial;
+         font-size: 20px;
+      }
        
-       /*.buttonXMinus {
-          padding-top : 200px;
-          padding-left : 50px;
-       }
-
-       .buttonYPlus {
-          padding-top : 50px;
-          padding-left : 200px;
-       }
-       
-       .buttonYMinus {
-          padding-top : 300px;
-          padding-left : 200px;
-       }
-
-       .buttonZPlus {
-          padding-top : 300px;
-          padding-left : 50px;
-       }
-       
-       .buttonZMinus {
-          padding-top : 50px;
-          padding-left : 400px;
-       }*/
-
       </style>
   </head>
   <body>
       <div id="svgHolder" class="svgHolder">
-        <svg id="svgContainer" class=svgContainer/>
+        <div class="svgContainer">
+          <svg id="svgContainer"/>
+        </div>  
+        <div class="xyzAxis">
+           <svg xmlns="http://www.w3.org/2000/svg" width="50" height="45" version="1.1">
+             <line x1="25" y1="25" x2="25" y2="7" style="stroke:rgb(255,0,0);stroke-width:2" stroke-linecap="square"/>
+            <text x="29" y="9" fill="red" font-size="9">Y</text>
+
+            <line x1="25" y1="25" x2="42" y2="25" style="stroke:rgb(0,255,0);stroke-width:2" stroke-linecap="square" />
+            <text x="41" y="20" fill="green" font-size="9">X</text>
+            
+            <line x1="25" y1="25" x2="15" y2="37" style="stroke:rgb(0,0,255);stroke-width:2"stroke-linecap="square" />
+            
+            <text x="22" y="42" fill="blue" font-size="9">Z</text>
+          </svg>
+        </div>
       </div>
+     
       
       <div class="controlPane" >
-        <div id="buttonXPlus" class="cell buttonXPlus">X Clockwise</div>
-        <div id="buttonXMinus" class="cell buttonXMinus">X AntiClockwise</div>
-        <div id="buttonYPlus" class="cell buttonYPlus">Y Clockwise</div>
-        <div id="buttonYMinus" class="cell buttonYMinus">Y AntiClockwise</div>
-        <div id="buttonZPlus" class="cell buttonZPlus">Z Clockwise</div>
-        <div id="buttonZMinus" class="cell buttonZMinus">Z AntiClockwise</div>
+        <div id="buttonXMinus" class="button">X Clockwise</div>
+        <div id="buttonXPlus" class="button">X AntiClockwise</div>
+        <div id="buttonYMinus" class="button">Y Clockwise</div>
+        <div id="buttonYPlus" class="button">Y AntiClockwise</div>
+        <div id="buttonZMinus" class="button">Z Clockwise</div>
+        <div id="buttonZPlus" class="button">Z AntiClockwise</div>
+        <br>
+        <!-- <div class="button">
+          <img id="toggleXRotation">
+          Rotate X
+        </div>
+        <div class="button">
+          <img id="toggleYRotation">
+          Rotate Y
+        </div>
+        <div class="button">
+          <img id="toggleZRotation">
+          Rotate Z
+        </div> -->
       </div>  
         
       <script src="js/index.js"></script>
